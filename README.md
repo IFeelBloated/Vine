@@ -33,3 +33,19 @@ Vine is a collection of a non-local error based de-halo filter and a set of morp
 - All 3 planes of R, G and B will be processed when the input is RGB
 - **QUALITY (Dehalo)**: cutting edge
 - **PERFORMANCE (Dehalo)**: pretty slow but practical
+
+## Details
+### Dehalo
+Dehalo removes halo artifacts caused by over-sharpening or sinc-like resizers or stuff like that<br />
+
+workflow:
+- degraded(local mean/similarity window = 0) NLMeans filtering to kill halos from the video, it's not NLMeans technically, it weights on non-local errors instead of non-local means, which works ultra nice on halos
+- a cutoff filter replaces low frequencies of the filtered clip with low frequencies from the source clip cuz halos are medium to high frequency artifacts apparently
+- a threshold based limiter eliminates all small differences, halos are pretty big differences
+- a modified canny detection masks out edges with a big possibility to have halos around
+- masking halos out by doing morphological operations to the canny mask
+- replace masked areas in the source clip with the filtered clip
+
+```python
+Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=0.00390625, elast=None, cutoff=4, show=False)
+```
