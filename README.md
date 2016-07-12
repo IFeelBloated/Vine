@@ -49,3 +49,7 @@ workflow:
 ```python
 Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=0.00390625, elast=None, cutoff=4, show=False)
 ```
+- src<br />
+  clip to be processed
+- radius<br />
+  radius of the halo mask, radius[0] is the exact radius and radius[1] is the peripheral(inflating) radius, default radius[1] = ceil(radius[0]/2)
