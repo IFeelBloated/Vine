@@ -59,3 +59,5 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   strength of the non-local error filtering, greater value = more intense processing
 - sigma<br />
   refer to TCanny doc for more details
+- alpha, beta<br />
+  so halos occur at fairly sharp transitions, and we want weak and insignificant edges that got no or little halos around gone, and that we should re-scale the gradient of the canny mask, and these 2 parameters are related to that process, say x is the value of some pixel in the mask and it will be scaled to (x + alpha)^beta-alpha^beta, basically any value < 1-alpha will be close to 0 after that, so larger alpha = more edges
