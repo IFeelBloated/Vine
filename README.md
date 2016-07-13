@@ -61,3 +61,7 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   refer to TCanny doc for more details
 - alpha, beta<br />
   so halos occur at fairly sharp transitions, and we want weak and insignificant edges that got no or little halos around gone, and that we should re-scale the gradient of the canny mask, and these 2 parameters are related to that process, say *x* is the value of some pixel in the mask and it will be scaled to *(x + alpha)^beta-alpha^beta*, basically any value < *1-alpha* will be close to 0 after that, so larger alpha = more edges
+- thr<br />
+  threshold of the limiter, ranges from 0.0 (no limit) to 1.0 (no filtering), differences between the filtered clip and the source clip < thr will be discarded, otherwise remain unaffected.
+- elast<br />
+  elasticity of the threshold, ranges from 0.0 to thr.
