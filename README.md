@@ -53,3 +53,9 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   clip to be processed
 - radius<br />
   radius of the halo mask, radius[0] is the exact radius and radius[1] is the peripheral(inflating) radius, default radius[1] = ceil(radius[0]/2)
+- a<br />
+  window size of the non-local error filtering, greater value = higher quality and lower performance
+- h<br />
+  strength of the non-local error filtering, greater value = more intense processing
+- sigma<br />
+  refer to TCanny doc for more details
