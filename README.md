@@ -67,3 +67,5 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   elasticity of the threshold, ranges from 0.0 to thr.
 - cutoff<br />
   strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
+- show<br>
+  set it True and output will be the halo mask, for debugging and stuff
