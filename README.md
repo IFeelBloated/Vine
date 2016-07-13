@@ -92,10 +92,9 @@ clp = Vine.morphology.Gradient (clp)
 ```python
 clp = Vine.Dehalo (clp, [2, None], h=9.6)
 ```
-![](http://i.imgur.com/iahMByU.png)
-![](http://i.imgur.com/OW4CG8t.png)<br />
+<br />
 *zoomed to 400%*<br />
-![](http://i.imgur.com/2ugJL70.png)
+
 - analog video kind of severe and gross halo<br />
 gonna have to dissolve this kind of crap gradually by a set of chained dehalo operations
 ```python
@@ -104,5 +103,3 @@ clp = Vine.Dehalo(clp, [4,None], 12, 9.6, 2.2, 0.24)
 clp = Vine.Dehalo(clp, [4,None], 12, 6.4, 2.2, 0.24)
 clp = Vine.Dehalo(clp, [4,None], 12, 4.8, 2.2, 0.24)
 ```
-![](http://i.imgur.com/l2pLbKx.png)
-![](http://i.imgur.com/SvFjYV7.png)
