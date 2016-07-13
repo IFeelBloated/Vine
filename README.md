@@ -69,3 +69,14 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
 - show<br>
   set it True and output will be the halo mask, for debugging and stuff
+
+###morphology class
+```python
+morphology.Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat (src, radius=1)
+```
+- [Dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
+- [Erosion](https://en.wikipedia.org/wiki/Erosion_(morphology))
+- [Closing](https://en.wikipedia.org/wiki/Closing_(morphology))
+- [Opening](https://en.wikipedia.org/wiki/Opening_(morphology))
+- [Gradient](https://en.wikipedia.org/wiki/Morphological_gradient)
+- [Top Hat and Black Hat](https://en.wikipedia.org/wiki/Top-hat_transform)
