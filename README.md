@@ -93,7 +93,7 @@ clp = Vine.morphology.Gradient (clp)
 clp = Vine.Dehalo (clp, [2, None], h=9.6)
 ```
 ![](http://i.imgur.com/iahMByU.png)
-![](http://i.imgur.com/OW4CG8t.png)
+![](http://i.imgur.com/OW4CG8t.png)<br />
 *zoomed to 400%*
 ![](http://i.imgur.com/2ugJL70.png)
 - analog video kind of severe and gross halo<br />
