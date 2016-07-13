@@ -80,3 +80,11 @@ morphology.Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat (src, radiu
 - [Opening](https://en.wikipedia.org/wiki/Opening_(morphology))
 - [Gradient](https://en.wikipedia.org/wiki/Morphological_gradient)
 - [Top Hat and Black Hat](https://en.wikipedia.org/wiki/Top-hat_transform)
+
+## Demos
+- Do a morphological gradient operation and get a simple edge mask<br />
+```python
+clp = Vine.morphology.Gradient (clp)
+```
+![](http://i.imgur.com/KZ8NimG.png)
+![](http://i.imgur.com/iVQZWdQ.png)
