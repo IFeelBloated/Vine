@@ -65,3 +65,5 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   threshold of the limiter, ranges from 0.0 (no limit) to 1.0 (no filtering), differences between the filtered clip and the source clip < thr will be discarded, otherwise remain unaffected.
 - elast<br />
   elasticity of the threshold, ranges from 0.0 to thr.
+- cutoff<br />
+  strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
