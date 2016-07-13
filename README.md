@@ -96,3 +96,13 @@ clp = Vine.Dehalo (clp, [2, None], h=9.6)
 ![](http://i.imgur.com/OW4CG8t.png)
 *zoomed to 400%*
 ![](http://i.imgur.com/2ugJL70.png)
+- analog video kind of severe and gross halo<br />
+gonna have to dissolve this kind of crap gradually by a set of chained dehalo operations
+```python
+clp = Vine.Dehalo(clp, [4,None], 12, 12.8, 2.2, 0.24) #smaller "a" here allows for more aggressive processing on crappy vids
+clp = Vine.Dehalo(clp, [4,None], 12, 9.6, 2.2, 0.24)
+clp = Vine.Dehalo(clp, [4,None], 12, 6.4, 2.2, 0.24)
+clp = Vine.Dehalo(clp, [4,None], 12, 4.8, 2.2, 0.24)
+```
+![](http://i.imgur.com/l2pLbKx.png)
+![](http://i.imgur.com/SvFjYV7.png)
