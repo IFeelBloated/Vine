@@ -88,3 +88,11 @@ clp = Vine.morphology.Gradient (clp)
 ```
 ![](http://i.imgur.com/KZ8NimG.png)
 ![](http://i.imgur.com/iVQZWdQ.png)
+- typical halo<br />
+```python
+clp = Vine.Dehalo (clp, [2, None], h=9.6)
+```
+![](http://i.imgur.com/iahMByU.png)
+![](http://i.imgur.com/OW4CG8t.png)
+*zoomed to 400%*
+![](http://i.imgur.com/2ugJL70.png)
