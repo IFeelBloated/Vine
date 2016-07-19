@@ -41,13 +41,13 @@ Dehalo removes halo artifacts caused by over-sharpening or sinc-like resizers or
 workflow:
 - degraded(local mean/similarity window = 0) NLMeans filtering to kill halos from the video, it's not NLMeans technically, it weights on non-local errors instead of non-local means, which works ultra nice on halos
 - a cutoff filter replaces low frequencies of the filtered clip with low frequencies from the source clip cuz halos are medium to high frequency artifacts apparently
-- a threshold based limiter eliminates all small differences, halos are pretty big differences
+- like the classic aliasing(nearest neighbor) and ringing(sinc) trade-off, non-local error filtering annihilates halos and brings aliasing, so do a super-sampling anti-aliasing here and clean the aliasing mess
 - a modified canny detection masks out edges with a big possibility to have halos around
 - masking halos out by doing morphological operations to the canny mask
 - replace masked areas in the source clip with the filtered clip
 
 ```python
-Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=0.00390625, elast=None, cutoff=4, show=False)
+Dehalo (src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32, cutoff=4, show=False)
 ```
 - src<br />
   clip to be processed
@@ -57,14 +57,12 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sigma=0.6, alpha=0.36, beta=32, thr=
   window size of the non-local error filtering, greater value = higher quality and lower performance
 - h<br />
   strength of the non-local error filtering, greater value = more intense processing
+- sharp<br />
+  resampling sharpness of the anti-aliasing process
 - sigma<br />
   refer to TCanny doc for more details
 - alpha, beta<br />
   so halos occur at fairly sharp transitions, and we want weak and insignificant edges that got no or little halos around gone, and that we should re-scale the gradient of the canny mask, and these 2 parameters are related to that process, say *x* is the value of some pixel in the mask and it will be scaled to *(x + alpha)^beta-alpha^beta*, basically any value < *1-alpha* will be close to 0 after that, so larger alpha = more edges
-- thr<br />
-  threshold of the limiter, ranges from 0.0 (no limit) to 1.0 (no filtering), differences between the filtered clip and the source clip < thr will be discarded, otherwise remain unaffected.
-- elast<br />
-  elasticity of the threshold, ranges from 0.0 to thr.
 - cutoff<br />
   strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
 - show<br>
