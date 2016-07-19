@@ -100,3 +100,5 @@ clp = Vine.Dehalo (clp, [2, None], h=24)
 ```python
 clp = Vine.Dehalo (clp, [3, None], h=64, sharp=0.5, cutoff=2)
 ```
+![](http://i.imgur.com/US6aCEN.png)
+![](http://i.imgur.com/Z6w4Eto.png)
