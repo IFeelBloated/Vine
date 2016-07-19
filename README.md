@@ -94,6 +94,7 @@ clp = Vine.Dehalo (clp, [2, None], h=24)
 ![](http://i.imgur.com/aJRMnyf.png)
 <br />
 *zoomed to 400%*<br />
+*click the image and view at full size*<br />
 ![](http://i.imgur.com/vjs4oyW.png)
 - analog video kind of severe and gross halo<br />
 gonna have to dissolve this kind of crap gradually by a set of chained dehalo operations
