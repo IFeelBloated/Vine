@@ -43,7 +43,7 @@ class helpers:
           return clip
       def Inflate (src, radius):
           core            = vs.get_core ()
-          Inflate         = core.flt.Inflate
+          Inflate         = core.std.Inflate
           for i in range (radius):
               src         = Inflate (src)
           return src
@@ -51,13 +51,13 @@ class helpers:
 class morphology:
       def Dilation (src, radius=1):
           core            = vs.get_core ()
-          Maximum         = core.flt.Maximum
+          Maximum         = core.std.Maximum
           for i in range (radius):
               src         = Maximum (src)
           return src
       def Erosion (src, radius=1):
           core            = vs.get_core ()
-          Minimum         = core.flt.Minimum
+          Minimum         = core.std.Minimum
           for i in range (radius):
               src         = Minimum (src)
           return src
