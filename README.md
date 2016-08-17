@@ -14,13 +14,13 @@ Vine is a collection of a non-local error based de-halo filter and a set of morp
 
 ## Function List
 - Dehalo
-- morphology.Dilation
-- morphology.Erosion
-- morphology.Closing
-- morphology.Opening
-- morphology.Gradient
-- morphology.TopHat
-- morphology.BlackHat
+- Dilation
+- Erosion
+- Closing
+- Opening
+- Gradient
+- TopHat
+- BlackHat
 
 ## Formats
 - Bit Depth: 32bits floating point
@@ -46,7 +46,7 @@ workflow:
 - replace masked areas in the source clip with the filtered clip
 
 ```python
-Dehalo (src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32, cutoff=4, show=False)
+Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32, cutoff=4, show=False)
 ```
 - src<br />
   clip to be processed
@@ -67,9 +67,9 @@ Dehalo (src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, be
 - show<br>
   set it True and output will be the halo mask, for debugging and stuff
 
-###morphology class
+###morphology filters
 ```python
-morphology.Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat (src, radius=1)
+Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat(src, radius=1)
 ```
 - [Dilation](https://en.wikipedia.org/wiki/Dilation_(morphology))
 - [Erosion](https://en.wikipedia.org/wiki/Erosion_(morphology))
@@ -81,13 +81,13 @@ morphology.Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat (src, radiu
 ## Demos
 - Do a morphological gradient operation and get a simple edge mask<br />
 ```python
-clp = Vine.morphology.Gradient (clp)
+clp = Vine.Gradient(clp)
 ```
 ![](http://i.imgur.com/KZ8NimG.png)
 ![](http://i.imgur.com/iVQZWdQ.png)
 - typical halo<br />
 ```python
-clp = Vine.Dehalo (clp, [2, None], h=24)
+clp = Vine.Dehalo(clp, [2, None], h=24)
 ```
 ![](http://i.imgur.com/tUCz8QW.png)
 ![](http://i.imgur.com/aJRMnyf.png)
@@ -97,8 +97,8 @@ clp = Vine.Dehalo (clp, [2, None], h=24)
 ![](http://i.imgur.com/vjs4oyW.png)
 - analog video kind of severe and gross halo<br />
 ```python
-clp = Vine.Dehalo (clp, [3, None], h=24, sharp=0.5, cutoff=2)
-clp = Vine.Dehalo (clp, [3, None], h=64, sharp=0, sigma=2.2, alpha=0.24, cutoff=2)
+clp = Vine.Dehalo(clp, [3, None], h=24, sharp=0.5, cutoff=2)
+clp = Vine.Dehalo(clp, [3, None], h=64, sharp=0, sigma=2.2, alpha=0.24, cutoff=2)
 ```
 ![](http://i.imgur.com/oNvsrDp.png)
 ![](http://i.imgur.com/ER4lhLn.png)
