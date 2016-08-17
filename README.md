@@ -2,7 +2,7 @@
 ©2016 IFeelBloated, Vine Python Module for VapourSynth
 
 ## License
-LGPL v2.1
+LGPL v3.0
 
 ## Description
 Vine is a collection of a non-local error based de-halo filter and a set of morphological filters.
