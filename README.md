@@ -24,11 +24,11 @@ Vine is a collection of a non-local error based de-halo filter and a set of morp
 
 ## Formats
 - Bit Depth: 32bits floating point
-- Color Space: Gray, RGB, YUV 4:4:4 (subsampled YUV formats are not supported)
+- Color Space: Gray, RGB, YUV4XXPS
 - Scan Type: Progressive
 
 ## Notes
-- Only Y will be processed when the input is YUV 4:4:4, UV will be simply copied from the input
+- Only Y will be processed when the input is YUV, UV will be simply copied from the input
 - All 3 planes of R, G and B will be processed when the input is RGB
 - **QUALITY (Dehalo)**: cutting edge
 - **PERFORMANCE (Dehalo)**: pretty slow but practical
