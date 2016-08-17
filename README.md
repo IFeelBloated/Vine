@@ -81,16 +81,16 @@ Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat(src, radius=1)
 ## Demos
 - Do a morphological gradient operation and get a simple edge mask<br />
 ```python
-clp = Vine.Gradient(clp)
+clip = Vine.Gradient(clip)
 ```
 ![](http://i.imgur.com/oFoI3dc.png)
 ![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
-clp = Vine.Dehalo(clp, [2, None], h=24)
+clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=24, sharp=0.5)
 ```
-![](http://i.imgur.com/tUCz8QW.png)
-![](http://i.imgur.com/aJRMnyf.png)
+![](http://i.imgur.com/tRRsJBM.png)
+![](http://i.imgur.com/XjjxWjt.png)
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
