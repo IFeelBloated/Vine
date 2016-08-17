@@ -97,8 +97,8 @@ clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=24, sharp=0.5)
 ![](http://i.imgur.com/m0JtpGd.png)
 - analog video kind of severe and gross halo<br />
 ```python
-clp = Vine.Dehalo(clp, [3, None], h=24, sharp=0.5, cutoff=2)
-clp = Vine.Dehalo(clp, [3, None], h=64, sharp=0, sigma=2.2, alpha=0.24, cutoff=2)
+clip = Vine.Dehalo(clip, [2, None], sigma=1.6, alpha=0.18, h=24, sharp=0.5, cutoff=2)
+clip = Vine.Dehalo(clip, [2, None], sigma=2.2, alpha=0.18, h=64, sharp=0.5, cutoff=2)
 ```
-![](http://i.imgur.com/oNvsrDp.png)
-![](http://i.imgur.com/ER4lhLn.png)
+![](http://i.imgur.com/nEVKT4v.png)
+![](http://i.imgur.com/QAz76zf.png)
