@@ -83,8 +83,8 @@ Dilation/Erosion/Closing/Opening/Gradient/TopHat/BlackHat(src, radius=1)
 ```python
 clp = Vine.Gradient(clp)
 ```
-![](http://i.imgur.com/KZ8NimG.png)
-![](http://i.imgur.com/iVQZWdQ.png)
+![](http://i.imgur.com/oFoI3dc.png)
+![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
 clp = Vine.Dehalo(clp, [2, None], h=24)
