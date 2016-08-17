@@ -94,7 +94,7 @@ clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=24, sharp=0.5)
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![](http://i.imgur.com/vjs4oyW.png)
+![](http://i.imgur.com/m0JtpGd.png)
 - analog video kind of severe and gross halo<br />
 ```python
 clp = Vine.Dehalo(clp, [3, None], h=24, sharp=0.5, cutoff=2)
