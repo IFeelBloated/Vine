@@ -11,6 +11,7 @@ Vine is a collection of a non-local error based de-halo filter and a set of morp
 - [KNLMeansCL](https://github.com/Khanattila/KNLMeansCL)
 - [TCanny](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-TCanny)
 - [FMTConv](https://github.com/EleonoreMizo/fmtconv)
+- [NNEDI3](https://github.com/dubhater/vapoursynth-nnedi3)
 
 ## Function List
 - Dehalo
