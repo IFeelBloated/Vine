@@ -25,13 +25,14 @@ class helpers:
           h               = src.height
           clip            = Resample(src, w+left+right, h+top+bottom, -left, -top, w+left+right, h+top+bottom, kernel="point", **fmtc_args)
           return clip
-      def nlerror(src, a, h):
+      def nlmeans(src, a, s, h, rclip):
           core            = vs.get_core()
           Crop            = core.std.CropRel
           KNLMeansCL      = core.knlm.KNLMeansCL
-          pad             = helpers.padding(src, a, a, a, a)
-          nlm             = KNLMeansCL(pad, d=0, a=a, s=0, h=h)
-          clip            = Crop(nlm, a, a, a, a)
+          pad             = helpers.padding(src, a+s, a+s, a+s, a+s)
+          rclip           = helpers.padding(rclip, a+s, a+s, a+s, a+s) if rclip is not None else None
+          nlm             = KNLMeansCL(pad, d=0, a=a, s=s, h=h, rclip=rclip)
+          clip            = Crop(nlm, a+s, a+s, a+s, a+s)
           return clip
 
 class internal:
@@ -79,24 +80,32 @@ class internal:
           Resample        = core.fmtc.resample
           Canny           = core.tcanny.TCanny
           NNEDI           = core.nnedi3.nnedi3
+          MakeDiff        = core.std.MakeDiff
+          MergeDiff       = core.std.MergeDiff
           Transpose       = core.std.Transpose
           Expr            = core.std.Expr
           Inflate         = core.std.Inflate
           MaskedMerge     = core.std.MaskedMerge
+          c1              = 1.0539379242228472964011623967818
+          c2              = 0.7079956288531109375036838973963
+          strength        = [h, None]
+          strength[1]     = ((math.exp(c1 * h) - 1.0) /(math.pow(h, h) / math.gamma(h + 1.0))) / c2
           gamma           = pow(alpha, beta)
-          clean           = helpers.nlerror(src, a, h)
+          clean           = helpers.nlmeans(src, a, 0, strength[1], None)
           clean           = helpers.cutoff(src, clean, cutoff)
+          dif             = MakeDiff(src, clean)
+          dif             = helpers.nlmeans(dif, a, 1, strength[0], clean)
+          clean           = MergeDiff(clean, dif)
           for i in range(2):
               clean       = Transpose(NNEDI(Transpose(NNEDI(clean, **nnedi_args)), **nnedi_args))
           clean           = Resample(clean, src.width, src.height, sx=-1.25, sy=-1.25, kernel="cubic", a1=-sharp, a2=0)
           mask            = Canny(clean, sigma=sigma, **canny_args)
-          mask            = Expr(mask, "x {alpha} + {beta} pow {gamma} -".format(alpha=alpha, beta=beta, gamma=gamma))
+          mask            = Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=gamma))
           expanded        = internal.dilation(mask, radius[0])
           closed          = internal.closing(mask, radius[0])
           mask            = Expr([expanded, closed, mask], "x y - z +")
           for i in range(radius[1]):
               mask        = Inflate(mask)
-          mask            = Expr(mask, "x 0.0 max 1.0 min")
           merge           = MaskedMerge(src, clean, mask)
           clip            = mask if show else merge
           return clip
