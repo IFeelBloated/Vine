@@ -5,7 +5,7 @@
 LGPL v3.0
 
 ## Description
-Vine is a collection of a non-local error based de-halo filter and a set of morphological filters.
+Vine is a collection of a pixel matching based de-halo filter and a set of morphological filters.
 
 ## Requirements
 - [KNLMeansCL](https://github.com/Khanattila/KNLMeansCL)
@@ -90,16 +90,14 @@ clip = Vine.Gradient(clip)
 ```python
 clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=24, sharp=0.5)
 ```
-![](http://i.imgur.com/tRRsJBM.png)
-![](http://i.imgur.com/XjjxWjt.png)
+
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![](http://i.imgur.com/m0JtpGd.png)
+
 - analog video kind of severe and gross halo<br />
 ```python
 clip = Vine.Dehalo(clip, [2, None], sigma=1.6, alpha=0.18, h=24, sharp=0.5, cutoff=2)
 clip = Vine.Dehalo(clip, [2, None], sigma=2.2, alpha=0.18, h=64, sharp=0.5, cutoff=2)
 ```
-![](http://i.imgur.com/nEVKT4v.png)
-![](http://i.imgur.com/QAz76zf.png)
+
