@@ -89,9 +89,10 @@ clip = Vine.Gradient(clip)
 ![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
-clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=24, sharp=0.5)
+clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=12, sharp=0.5)
 ```
-
+![](http://i.imgur.com/OxoDvw1.png)
+![](http://i.imgur.com/Xhoiif4.png)
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
