@@ -102,4 +102,5 @@ clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=12, sharp=0.5)
 clip = Vine.Dehalo(clip, [3, None], sigma=1.6, alpha=0.18, h=12, sharp=0.5, cutoff=2)
 clip = Vine.Dehalo(clip, [3, None], sigma=2.2, alpha=0.18, h=24, sharp=0.5, cutoff=2)
 ```
-
+![](http://i.imgur.com/G1AQRFS.png)
+![](http://i.imgur.com/b6dh6a9.png)
