@@ -75,7 +75,7 @@ class internal:
           closing         = internal.closing(src, radius)
           clip            = Expr([src, closing], "y x -")
           return clip
-      def dehalo(src, radius, a, h, sharp, sigma, alpha, beta, cutoff, show):
+      def dehalo(src, radius, a, h, sharp, sigma, alpha, beta, cutoff, masking, show):
           core            = vs.get_core()
           Resample        = core.fmtc.resample
           Canny           = core.tcanny.TCanny
@@ -99,18 +99,21 @@ class internal:
           for i in range(2):
               clean       = Transpose(NNEDI(Transpose(NNEDI(clean, **nnedi_args)), **nnedi_args))
           clean           = Resample(clean, src.width, src.height, sx=-1.25, sy=-1.25, kernel="cubic", a1=-sharp, a2=0)
-          mask            = Canny(clean, sigma=sigma, **canny_args)
-          mask            = Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=gamma))
-          expanded        = internal.dilation(mask, radius[0])
-          closed          = internal.closing(mask, radius[0])
-          mask            = Expr([expanded, closed, mask], "x y - z +")
-          for i in range(radius[1]):
-              mask        = Inflate(mask)
-          merge           = MaskedMerge(src, clean, mask)
-          clip            = mask if show else merge
+          if masking:
+             mask         = Canny(clean, sigma=sigma, **canny_args)
+             mask         = Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=gamma))
+             expanded     = internal.dilation(mask, radius[0])
+             closed       = internal.closing(mask, radius[0])
+             mask         = Expr([expanded, closed, mask], "x y - z +")
+             for i in range(radius[1]):
+                 mask     = Inflate(mask)
+             merge        = MaskedMerge(src, clean, mask)
+             clip         = mask if show else merge
+          else:
+             clip         = clean
           return clip
 
-def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32.0, cutoff=4, show=False):
+def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32.0, cutoff=4, masking=True, show=False):
     core                  = vs.get_core()
     ShufflePlanes         = core.std.ShufflePlanes
     SelectEvery           = core.std.SelectEvery
@@ -155,8 +158,12 @@ def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36,
        raise TypeError("Vine.Dehalo: cutoff has to be an integer!")
     elif cutoff < 1 or cutoff > 100:
        raise RuntimeError("Vine.Dehalo: cutoff must fall in(0, 100]!")
+    if not isinstance(masking, bool):
+       raise TypeError("Vine.Dehalo: masking has to be boolean!")
     if not isinstance(show, bool):
        raise TypeError("Vine.Dehalo: show has to be boolean!")
+    if not masking and show
+       raise RuntimeError("Vine.Dehalo: masking has been disabled, set masking True to show the halo mask!")
     radius[1]             = math.ceil(radius[0] / 2) if radius[1] is None else radius[1]
     src                   = SetFieldBased(src, 0)
     colorspace            = src.format.color_family
@@ -165,7 +172,7 @@ def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36,
     if colorspace == vs.YUV:
        src_color          = src
        src                = ShufflePlanes(src, 0, vs.GRAY)
-    clip                  = internal.dehalo(src, radius, a, h, sharp, sigma, alpha, beta, cutoff, show)
+    clip                  = internal.dehalo(src, radius, a, h, sharp, sigma, alpha, beta, cutoff, masking, show)
     if colorspace == vs.YUV:
        clip               = ShufflePlanes([clip, src_color], [0, 1, 2], vs.YUV)
     if colorspace == vs.RGB:
