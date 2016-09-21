@@ -48,7 +48,7 @@ workflow:
 - replace masked areas in the source clip with the filtered clip
 
 ```python
-Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32, cutoff=4, show=False)
+Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32, cutoff=4, masking=True, show=False)
 ```
 - src<br />
   clip to be processed
@@ -66,7 +66,9 @@ Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, bet
   so halos occur at fairly sharp transitions, and we want weak and insignificant edges that got no or little halos around gone, and that we should re-scale the gradient of the canny mask, and these 2 parameters are related to that process, say *x* is the value of some pixel in the mask and it will be scaled to *(x + alpha)^beta-alpha^beta*, basically any value < *1-alpha* will be close to 0 after that, so larger alpha = more edges
 - cutoff<br />
   strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
-- show<br>
+- masking<br />
+  set it False and get a raw output with no mask protection, for very large radius halos
+- show<br />
   set it True and output will be the halo mask, for debugging and stuff
 
 ###morphology filters
