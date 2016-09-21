@@ -162,7 +162,7 @@ def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36,
        raise TypeError("Vine.Dehalo: masking has to be boolean!")
     if not isinstance(show, bool):
        raise TypeError("Vine.Dehalo: show has to be boolean!")
-    if not masking and show
+    if not masking and show:
        raise RuntimeError("Vine.Dehalo: masking has been disabled, set masking True to show the halo mask!")
     radius[1]             = math.ceil(radius[0] / 2) if radius[1] is None else radius[1]
     src                   = SetFieldBased(src, 0)
