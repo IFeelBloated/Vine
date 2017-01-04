@@ -93,7 +93,7 @@ class internal:
           strength           = [h]
           strength          += [((math.exp(c1 * h) - 1.0) /(math.pow(h, h) / math.gamma(h + 1.0))) / c2]
           gamma              = math.pow(alpha, beta)
-          weight             = c3 * sharp * math.log(1 + 1 / (c3 * sharp))
+          weight             = c3 * sharp * math.log(1.0 + 1.0 / (c3 * sharp))
           clean              = core.NLMeans(src, a, 0, strength[1], None)
           clean              = core.CutOff(src, clean, cutoff)
           dif                = core.MakeDiff(src, clean)
