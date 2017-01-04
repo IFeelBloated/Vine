@@ -99,8 +99,9 @@ class internal:
           dif                = core.MakeDiff(src, clean)
           dif                = core.NLMeans(dif, a, 1, strength[0], clean)
           clean              = core.MergeDiff(clean, dif)
+          upsampled          = clean
           for i in range(2):
-              upsampled      = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(clean, **nnedi_args)), **nnedi_args))
+              upsampled      = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(upsampled, **nnedi_args)), **nnedi_args))
           resampled          = core.Resample(upsampled, src.width, src.height, sx=-1.25, sy=-1.25, kernel="cubic", a1=-sharp, a2=0)
           clean              = core.Merge(resampled, clean, weight)
           if masking:
