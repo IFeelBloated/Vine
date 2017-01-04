@@ -42,7 +42,7 @@ workflow:
 - degraded(local mean/similarity window = 0) NLMeans filtering to kill halos from the video, it's not NLMeans technically, it weights on non-local errors instead of non-local means, which works ultra nice on halos
 - a cutoff filter replaces low frequencies of the filtered clip with low frequencies from the source clip cuz halos are medium to high frequency artifacts apparently
 - non-local errors might distort high frequency components since it does not make use of the neighborhood at all, especially with a large "h", so do an actual NLMeans here to refine high frequencies and therefore remove artifacts caused by non-local errors
-- like the classic aliasing(nearest neighbor) and ringing(sinc) trade-off, non-local error filtering annihilates halos and brings aliasing, so do a super-sampling anti-aliasing here and clean the aliasing mess
+- like the classic aliasing(nearest neighbor) and ringing(sinc) trade-off, non-local error filtering annihilates halos and brings aliasing, so do a super-sampling anti-aliasing here and clean the aliasing mess, the resampled result will be blended with the clip before resampling, weight is determined by the "sharp" parameter
 - a modified canny detection masks out edges with a big possibility to have halos around
 - masking halos out by doing morphological operations to the canny mask
 - replace masked areas in the source clip with the filtered clip
@@ -59,7 +59,7 @@ Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, bet
 - h<br />
   strength of the non-local error filtering, greater value = more intense processing
 - sharp<br />
-  resampling sharpness of the anti-aliasing process
+  resampling sharpness of the anti-aliasing process, also related to the blending process mentioned above, blending weight = *constant* * sharp * ln(1 + 1 / (*constant* * sharp)), the mathematical limit for weight is 0 (simply returns the resampled result) as sharp goes infinitely close to 0, or 1 (simply returns the clip before resampling) as sharp goes towards infinity
 - sigma<br />
   refer to TCanny doc for more details
 - alpha, beta<br />
