@@ -19,6 +19,7 @@ class get_core:
           self.MakeDiff      = self.core.std.MakeDiff
           self.MergeDiff     = self.core.std.MergeDiff
           self.Crop          = self.core.std.CropRel
+          self.AddBorders    = self.core.std.AddBorders
           self.Transpose     = self.core.std.Transpose
           self.Inflate       = self.core.std.Inflate
           self.MaskedMerge   = self.core.std.MaskedMerge
@@ -36,15 +37,9 @@ class get_core:
           clip               = self.MergeDiff(inline(low), hif)
           return clip
 
-      def Pad(self, src, left, right, top, bottom):
-          w                  = src.width
-          h                  = src.height
-          clip               = self.Resample(src, w+left+right, h+top+bottom, -left, -top, w+left+right, h+top+bottom, kernel="point", **fmtc_args)
-          return clip
-
       def NLMeans(self, src, a, s, h, rclip):
-          pad                = self.Pad(src, a+s, a+s, a+s, a+s)
-          rclip              = self.Pad(rclip, a+s, a+s, a+s, a+s) if rclip is not None else None
+          pad                = self.AddBorders(src, a+s, a+s, a+s, a+s)
+          rclip              = self.AddBorders(rclip, a+s, a+s, a+s, a+s) if rclip is not None else None
           nlm                = self.KNLMeansCL(pad, d=0, a=a, s=s, h=h, rclip=rclip)
           clip               = self.Crop(nlm, a+s, a+s, a+s, a+s)
           return clip
