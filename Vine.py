@@ -154,7 +154,7 @@ def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36,
     if not isinstance(cutoff, int):
        raise TypeError("Vine.Dehalo: cutoff has to be an integer!")
     elif cutoff < 1 or cutoff > 100:
-       raise RuntimeError("Vine.Dehalo: cutoff must fall in(0, 100]!")
+       raise RuntimeError("Vine.Dehalo: cutoff must fall in (0, 100]!")
     if not isinstance(masking, bool):
        raise TypeError("Vine.Dehalo: masking has to be boolean!")
     if not isinstance(show, bool):
