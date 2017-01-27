@@ -1,5 +1,5 @@
 # Vine
-©2016 IFeelBloated, Vine Python Module for VapourSynth
+©2017 IFeelBloated, Vine Python Module for VapourSynth
 
 ## License
 LGPL v3.0
