@@ -39,10 +39,10 @@ Vine is a collection of a pixel matching based de-halo filter and a set of morph
 Dehalo removes halo artifacts caused by over-sharpening or sinc-like resizers or stuff like that<br />
 
 workflow:
-- degraded(local mean/similarity window = 0) NLMeans filtering to kill halos from the video, it's not NLMeans technically, it weights on non-local errors instead of non-local means, which works ultra nice on halos
+- degraded (local mean/similarity window = 0) NLMeans filtering to kill halos from the video, it's not NLMeans technically, it weights on non-local errors instead of non-local means, which works ultra nice on halos
 - a cutoff filter replaces low frequencies of the filtered clip with low frequencies from the source clip cuz halos are medium to high frequency artifacts apparently
 - non-local errors might distort high frequency components since it does not make use of the neighborhood at all, especially with a large "h", so do an actual NLMeans here to refine high frequencies and therefore remove artifacts caused by non-local errors
-- like the classic aliasing(nearest neighbor) and ringing(sinc) trade-off, non-local error filtering annihilates halos and brings aliasing, so do a super-sampling anti-aliasing here and clean the aliasing mess, the resampled result will be blended with the clip before resampling, weight is determined by the "sharp" parameter
+- like the classic aliasing (nearest neighbor) and ringing (sinc) trade-off, non-local errors filtering annihilates halos and brings aliasing, so do a super-sampling anti-aliasing here and clean the aliasing mess, the resampled result will be blended with the clip before resampling, weight is determined by the "sharp" parameter
 - a modified canny detection masks out edges with a big possibility to have halos around
 - masking halos out by doing morphological operations to the canny mask
 - replace masked areas in the source clip with the filtered clip
@@ -53,11 +53,11 @@ Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, bet
 - src<br />
   clip to be processed
 - radius<br />
-  radius of the halo mask, radius[0] is the exact radius and radius[1] is the peripheral(inflating) radius, default radius[1] = ceil(radius[0]/2)
+  radius of the halo mask, radius[0] is the exact radius and radius[1] is the peripheral (inflating) radius, default radius[1] = ceil(radius[0]/2)
 - a<br />
-  window size of the non-local error filtering, greater value = higher quality and lower performance
+  window size of the non-local errors filtering, greater value = higher quality and lower performance
 - h<br />
-  strength of the non-local error filtering, greater value = more intense processing
+  strength of the non-local errors filtering, greater value = more intense processing
 - sharp<br />
   resampling sharpness of the anti-aliasing process, also related to the blending process mentioned above, blending weight = *constant* * sharp * ln(1 + 1 / (*constant* * sharp)), the mathematical limit for weight is 0 (simply returns the resampled result) as sharp goes infinitely close to 0, or 1 (simply returns the clip before resampling) as sharp goes towards infinity
 - sigma<br />
@@ -65,7 +65,7 @@ Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, bet
 - alpha, beta<br />
   so halos occur at fairly sharp transitions, and we want weak and insignificant edges that got no or little halos around gone, and that we should re-scale the gradient of the canny mask, and these 2 parameters are related to that process, say *x* is the value of some pixel in the mask and it will be scaled to *(x + alpha)^beta-alpha^beta*, basically any value < *1-alpha* will be close to 0 after that, so larger alpha = more edges
 - cutoff<br />
-  strength of the cutoff filter, ranges from 0(no low frequency protection) to 100(almost no filtering)
+  strength of the cutoff filter, ranges from 0 (no low frequency protection) to 100 (almost no filtering)
 - masking<br />
   set it False and get a raw output with no mask protection, for very large radius halos
 - show<br />
