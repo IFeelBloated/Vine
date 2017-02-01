@@ -85,20 +85,19 @@ class internal:
           c1                 = 1.0539379242228472964011623967818
           c2                 = 0.7079956288531109375036838973963
           c3                 = 0.3926327792690057290863679493724
-          strength           = [h]
-          strength          += [((math.exp(c1 * h) - 1.0) /(math.pow(h, h) / math.gamma(h + 1.0))) / c2]
+          strength           = [((math.exp(c1 * h) - 1.0) /(math.pow(h, h) / math.gamma(h + 1.0))) / c2]
+          strength          += [h]
           gamma              = math.pow(alpha, beta)
           weight             = c3 * sharp * math.log(1.0 + 1.0 / (c3 * sharp))
-          clean              = core.NLMeans(src, a, 0, strength[1], None)
+          upsampled          = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
+          upsampled          = core.NLMeans(upsampled, a, 0, strength[0], None)
+          resampled          = core.Resample(upsampled, src.width, src.height, sx=-0.5, sy=-0.5, kernel="cubic", a1=-sharp, a2=0)
+          clean              = core.NLMeans(src, a, 0, strength[0], None)
+          clean              = core.Merge(resampled, clean, weight)
           clean              = core.CutOff(src, clean, cutoff)
           dif                = core.MakeDiff(src, clean)
-          dif                = core.NLMeans(dif, a, 1, strength[0], clean)
+          dif                = core.NLMeans(dif, a, 1, strength[1], clean)
           clean              = core.MergeDiff(clean, dif)
-          upsampled          = clean
-          for i in range(2):
-              upsampled      = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(upsampled, **nnedi_args)), **nnedi_args))
-          resampled          = core.Resample(upsampled, src.width, src.height, sx=-1.5, sy=-1.5, kernel="cubic", a1=-sharp, a2=0)
-          clean              = core.Merge(resampled, clean, weight)
           if masking:
              mask            = core.Canny(clean, sigma=sigma, **canny_args)
              mask            = core.Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=gamma))
