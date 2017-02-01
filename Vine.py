@@ -97,7 +97,7 @@ class internal:
           upsampled          = clean
           for i in range(2):
               upsampled      = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(upsampled, **nnedi_args)), **nnedi_args))
-          resampled          = core.Resample(upsampled, src.width, src.height, sx=-1.25, sy=-1.25, kernel="cubic", a1=-sharp, a2=0)
+          resampled          = core.Resample(upsampled, src.width, src.height, sx=-1.5, sy=-1.5, kernel="cubic", a1=-sharp, a2=0)
           clean              = core.Merge(resampled, clean, weight)
           if masking:
              mask            = core.Canny(clean, sigma=sigma, **canny_args)
