@@ -82,11 +82,11 @@ class internal:
           return clip
 
       def dehalo(core, src, radius, a, h, sharp, sigma, alpha, beta, cutoff, masking, show):
-          c1                 = 1.0539379242228472964011623967818
-          c2                 = 0.7079956288531109375036838973963
+          c1                 = 34.596639347653467565860120972079
+          c2                 = 0.2310854446174290294918410156489
           c3                 = 0.3926327792690057290863679493724
-          strength           = [((math.exp(c1 * h) - 1.0) /(math.pow(h, h) / math.gamma(h + 1.0))) / c2]
-          strength          += [h]
+          strength           = [h]
+          strength          += [c1 * math.exp(1.0 / math.pow(h, c2)) - c1]
           gamma              = math.pow(alpha, beta)
           weight             = c3 * sharp * math.log(1.0 + 1.0 / (c3 * sharp))
           upsampled          = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
