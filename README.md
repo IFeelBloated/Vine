@@ -91,14 +91,14 @@ clip = Vine.Gradient(clip)
 ![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
-clip = Vine.Dehalo(clip, [2, None], sigma=1.5, alpha=0.06, h=18.2)
+clip = Vine.Dehalo(clip, [1, None], sigma=1.5, alpha=0.06, h=18.2)
 ```
-![](http://i.imgur.com/I2iHbSu.png)
-![](http://i.imgur.com/yPLQuAn.png)
+![](http://i.imgur.com/tWQ2Fka.png)
+![](http://i.imgur.com/Rqq2M3m.png)
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![](http://i.imgur.com/izT5t3N.png)
+![](http://i.imgur.com/i8Tac1a.png)
 - analog video kind of severe and gross halo<br />
 ```python
 clip = Vine.Dehalo(clip, [3, None], sigma=1.6, alpha=0.18, h=12, sharp=0.5, cutoff=2)
