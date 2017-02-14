@@ -1,16 +1,27 @@
 import vapoursynth as vs
+import mvmulti
 import math
 
 fmtc_args                    = dict(fulls=True, fulld=True)
+msuper_args                  = dict(hpad=0, vpad=0, sharp=2, levels=0, chroma=False)
+manalyze_args                = dict(search=3, truemotion=False, trymany=True, levels=0, badrange=-24, divide=0, dct=0, chroma=False)
+mrecalculate_args            = dict(truemotion=False, search=3, smooth=1, divide=0, dct=0, chroma=False)
+mdegrain_args                = dict(plane=0, thscd1=16711680.0, thscd2=255.0)
 canny_args                   = dict(mode=1, op=0)
 nnedi_args                   = dict(field=1, dh=True, nns=4, qual=2, etype=1, nsize=0)
 
 class get_core:
       def __init__(self):
           self.core          = vs.get_core()
+          self.MSuper        = self.core.mvsf.Super
+          self.MAnalyze      = mvmulti.Analyze
+          self.MRecalculate  = mvmulti.Recalculate
+          self.MDegrainN     = mvmulti.DegrainN
           self.KNLMeansCL    = self.core.knlm.KNLMeansCL
           self.Canny         = self.core.tcanny.TCanny
           self.NNEDI         = self.core.nnedi3.nnedi3
+          self.RGB2OPP       = self.core.bm3d.RGB2OPP
+          self.OPP2RGB       = self.core.bm3d.OPP2RGB
           self.Resample      = self.core.fmtc.resample
           self.Maximum       = self.core.std.Maximum
           self.Minimum       = self.core.std.Minimum
@@ -24,9 +35,7 @@ class get_core:
           self.Inflate       = self.core.std.Inflate
           self.MaskedMerge   = self.core.std.MaskedMerge
           self.ShufflePlanes = self.core.std.ShufflePlanes
-          self.SelectEvery   = self.core.std.SelectEvery
           self.SetFieldBased = self.core.std.SetFieldBased
-          self.Interleave    = self.core.std.Interleave
 
       def CutOff(self, low, hi, p):
           def inline(src):
@@ -37,11 +46,20 @@ class get_core:
           clip               = self.MergeDiff(inline(low), hif)
           return clip
 
-      def NLMeans(self, src, a, s, h, rclip):
-          pad                = self.AddBorders(src, a+s, a+s, a+s, a+s)
-          rclip              = self.AddBorders(rclip, a+s, a+s, a+s, a+s) if rclip is not None else None
-          nlm                = self.KNLMeansCL(pad, d=0, a=a, s=s, h=h, rclip=rclip)
-          clip               = self.Crop(nlm, a+s, a+s, a+s, a+s)
+      def Pad(self, src, left, right, top, bottom):
+          w                  = src.width
+          h                  = src.height
+          clip               = self.Resample(src, w+left+right, h+top+bottom, -left, -top, w+left+right, h+top+bottom, kernel="point", **fmtc_args)
+          return clip
+
+      def NLErrors(self, src, a, h):
+          pad                = self.AddBorders(src, a, a, a, a)
+          nlm                = self.KNLMeansCL(pad, d=0, a=a, s=0, h=h)
+          clip               = self.Crop(nlm, a, a, a, a)
+          return clip
+
+      def XYClosest(self, src1, src2, ref):
+          clip               = self.Expr([src1, src2, ref], "x z - abs y z - abs > y x ?")
           return clip
 
 class internal:
@@ -81,99 +99,186 @@ class internal:
           clip               = core.Expr([src, closing], "y x -")
           return clip
 
-      def dehalo(core, src, radius, a, h, sharp, sigma, alpha, beta, cutoff, masking, show):
-          c1                 = 34.596639347653467565860120972079
-          c2                 = 0.2310854446174290294918410156489
-          c3                 = 0.3926327792690057290863679493724
-          strength           = [h]
-          strength          += [c1 * math.exp(1.0 / math.pow(h, c2)) - c1]
-          gamma              = math.pow(alpha, beta)
-          weight             = c3 * sharp * math.log(1.0 + 1.0 / (c3 * sharp))
-          upsampled          = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
-          upsampled          = core.NLMeans(upsampled, a, 0, strength[0], None)
-          resampled          = core.Resample(upsampled, src.width, src.height, sx=-0.5, sy=-0.5, kernel="cubic", a1=-sharp, a2=0)
-          clean              = core.NLMeans(src, a, 0, strength[0], None)
-          clean              = core.Merge(resampled, clean, weight)
-          clean              = core.CutOff(src, clean, cutoff)
-          dif                = core.MakeDiff(src, clean)
-          dif                = core.NLMeans(dif, a, 1, strength[1], clean)
-          clean              = core.MergeDiff(clean, dif)
-          if masking:
-             mask            = core.Canny(clean, sigma=sigma, **canny_args)
-             mask            = core.Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=gamma))
-             expanded        = internal.dilation(core, mask, radius[0])
-             closed          = internal.closing(core, mask, radius[0])
-             mask            = core.Expr([expanded, closed, mask], "x y - z +")
-             for i in range(radius[1]):
-                 mask        = core.Inflate(mask)
-             merge           = core.MaskedMerge(src, clean, mask)
-             clip            = mask if show else merge
-          else:
-             clip            = clean
+      def super(core, src, pel):
+          src                = core.Pad(src, 128, 128, 128, 128)
+          clip               = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
+          if pel == 4:
+             clip            = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(clip, **nnedi_args)), **nnedi_args))
           return clip
 
-def Dehalo(src, radius=[1, None], a=32, h=6.4, sharp=1.0, sigma=0.6, alpha=0.36, beta=32.0, cutoff=4, masking=True, show=False):
+      def basic(core, src, a, h, sharp, cutoff):
+          constant           = 0.3926327792690057290863679493724
+          weight             = constant * sharp * math.log(1.0 + 1.0 / (constant * sharp))
+          upsampled          = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
+          upsampled          = core.NLErrors(upsampled, a, h)
+          resampled          = core.Resample(upsampled, src.width, src.height, sx=-0.5, sy=-0.5, kernel="cubic", a1=-sharp, a2=0)
+          clean              = core.NLErrors(src, a, h)
+          clean              = core.Merge(resampled, clean, weight)
+          clip               = core.CutOff(src, clean, cutoff)
+          return clip
+
+      def final(core, src, super, radius, pel, sad, sigma, alpha, beta, masking, show):
+          constant           = 0.0009948813682897925944723492342
+          me_sad             = constant * math.pow(sad, 2.0) * math.log(1.0 + 1.0 / (constant * sad))
+          if masking:
+             mask            = core.Canny(src[1], sigma=sigma, **canny_args)
+             mask            = core.Expr(mask, "x {alpha} + {beta} pow {gamma} - 0.0 max 1.0 min".format(alpha=alpha, beta=beta, gamma=math.pow(alpha, beta)))
+             expanded        = internal.dilation(core, mask, radius[1])
+             closed          = internal.closing(core, mask, radius[1])
+             mask            = core.Expr([expanded, closed, mask], "x y - z +")
+             for i in range(radius[2]):
+                 mask        = core.Inflate(mask)
+             if show:
+                return mask
+          for i in range(2):
+              src[i]         = core.Pad(src[i], 128, 128, 128, 128)
+          src[1]             = core.MakeDiff(src[1], src[0])
+          super[1]           = core.MakeDiff(super[1], super[0]) if super[0] is not None and super[1] is not None else None
+          blankdif           = core.Expr(src[0], "0.0")
+          supersearch        = core.MSuper(src[0], pelclip=super[0], rfilter=4, pel=pel, **msuper_args)
+          superdif           = core.MSuper(src[1], pelclip=super[1], rfilter=2, pel=pel, **msuper_args)
+          vmulti             = core.MAnalyze(supersearch, tr=radius[0], overlap=64, blksize=128, **manalyze_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=32, blksize=64, thsad=me_sad, **mrecalculate_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=16, blksize=32, thsad=me_sad, **mrecalculate_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=8, blksize=16, thsad=me_sad, **mrecalculate_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=4, blksize=8, thsad=me_sad, **mrecalculate_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=2, blksize=4, thsad=me_sad, **mrecalculate_args)
+          vmulti             = core.MRecalculate(supersearch, vmulti, tr=radius[0], overlap=1, blksize=2, thsad=me_sad, **mrecalculate_args)
+          averaged_dif       = core.MDegrainN(src[1], superdif, vmulti, tr=radius[0], thsad=sad, **mdegrain_args)
+          averaged_dif       = core.XYClosest(averaged_dif, src[1], blankdif)
+          averaged_dif       = core.Crop(averaged_dif, 128, 128, 128, 128)
+          src[0]             = core.Crop(src[0], 128, 128, 128, 128)
+          clean              = core.MergeDiff(src[0], averaged_dif)
+          clip               = core.MaskedMerge(src[0], clean, mask) if masking else clean
+          return clip
+
+def Super(src, pel=4):
     if not isinstance(src, vs.VideoNode):
-       raise TypeError("Vine.Dehalo: src has to be a video clip!")
+       raise TypeError("Vine.Super: src has to be a video clip!")
     elif src.format.sample_type != vs.FLOAT or src.format.bits_per_sample < 32:
-       raise TypeError("Vine.Dehalo: the sample type of src has to be single precision!")
-    if not isinstance(radius, list):
-       raise TypeError("Vine.Dehalo: radius parameter has to be an array!")
-    elif len(radius) != 2:
-       raise RuntimeError("Vine.Dehalo: radius parameter has to contain 2 elements exactly!")
-    if not isinstance(radius[0], int):
-       raise TypeError("Vine.Dehalo: radius[0] has to be an integer!")
-    elif radius[0] < 0:
-       raise RuntimeError("Vine.Dehalo: radius[0] has to be no less than 0!")
-    if not isinstance(radius[1], int) and radius[1] is not None:
-       raise TypeError("Vine.Dehalo: radius[1] has to be an integer or None!")
-    elif radius[1] is not None:
-         if radius[1] < 0:
-            raise RuntimeError("Vine.Dehalo: radius[1] has to be no less than 0!")
-    if not isinstance(a, int):
-       raise TypeError("Vine.Dehalo: a has to be an integer!")
-    elif a < 1:
-       raise RuntimeError("Vine.Dehalo: a has to be greater than 0!")
-    if not isinstance(h, float) and not isinstance(h, int):
-       raise TypeError("Vine.Dehalo: h has to be a real number!")
-    elif h <= 0:
-       raise RuntimeError("Vine.Dehalo: h has to be greater than 0!")
-    if not isinstance(sharp, float) and not isinstance(sharp, int):
-       raise TypeError("Vine.Dehalo: sharp has to be a real number!")
-    elif sharp <= 0.0:
-       raise RuntimeError("Vine.Dehalo: sharp has to be greater than 0!")
-    if not isinstance(alpha, float) and not isinstance(alpha, int):
-       raise TypeError("Vine.Dehalo: alpha has to be a real number!")
-    elif alpha < 0.0 or alpha > 1.0:
-       raise RuntimeError("Vine.Dehalo: alpha must fall in [0.0, 1.0]!")
-    if not isinstance(beta, float) and not isinstance(beta, int):
-       raise TypeError("Vine.Dehalo: beta has to be a real number!")
-    elif beta <= 1.0:
-       raise RuntimeError("Vine.Dehalo: beta has to be greater than 1.0!")
-    if not isinstance(cutoff, int):
-       raise TypeError("Vine.Dehalo: cutoff has to be an integer!")
-    elif cutoff < 1 or cutoff > 100:
-       raise RuntimeError("Vine.Dehalo: cutoff must fall in (0, 100]!")
-    if not isinstance(masking, bool):
-       raise TypeError("Vine.Dehalo: masking has to be boolean!")
-    if not isinstance(show, bool):
-       raise TypeError("Vine.Dehalo: show has to be boolean!")
-    if not masking and show:
-       raise RuntimeError("Vine.Dehalo: masking has been disabled, set masking True to show the halo mask!")
+       raise TypeError("Vine.Super: the sample type of src has to be single precision!")
+    if not isinstance(pel, int):
+       raise TypeError("Vine.Super: pel has to be an integer!")
+    elif pel != 2 and pel != 4:
+       raise RuntimeError("Vine.Super: pel has to be 2 or 4!")
     core                     = get_core()
-    radius[1]                = math.ceil(radius[0] / 2) if radius[1] is None else radius[1]
     src                      = core.SetFieldBased(src, 0)
     colorspace               = src.format.color_family
     if colorspace == vs.RGB:
-       src                   = core.Interleave([core.ShufflePlanes(src, 0, vs.GRAY), core.ShufflePlanes(src, 1, vs.GRAY), core.ShufflePlanes(src, 2, vs.GRAY)])
-    if colorspace == vs.YUV:
-       src_color             = src
+       src                   = core.RGB2OPP(src, 1)
+    if colorspace != vs.GRAY:
        src                   = core.ShufflePlanes(src, 0, vs.GRAY)
-    clip                     = internal.dehalo(core, src, radius, a, h, sharp, sigma, alpha, beta, cutoff, masking, show)
-    if colorspace == vs.YUV:
+    clip                     = internal.super(core, src, pel)
+    del core
+    return clip
+
+def Basic(src, a=32, h=6.4, sharp=1.0, cutoff=4):
+    if not isinstance(src, vs.VideoNode):
+       raise TypeError("Vine.Basic: src has to be a video clip!")
+    elif src.format.sample_type != vs.FLOAT or src.format.bits_per_sample < 32:
+       raise TypeError("Vine.Basic: the sample type of src has to be single precision!")
+    if not isinstance(a, int):
+       raise TypeError("Vine.Basic: a has to be an integer!")
+    elif a < 1:
+       raise RuntimeError("Vine.Basic: a has to be greater than 0!")
+    if not isinstance(h, float) and not isinstance(h, int):
+       raise TypeError("Vine.Basic: h has to be a real number!")
+    elif h <= 0:
+       raise RuntimeError("Vine.Basic: h has to be greater than 0!")
+    if not isinstance(sharp, float) and not isinstance(sharp, int):
+       raise TypeError("Vine.Basic: sharp has to be a real number!")
+    elif sharp <= 0.0:
+       raise RuntimeError("Vine.Basic: sharp has to be greater than 0!")
+    if not isinstance(cutoff, int):
+       raise TypeError("Vine.Basic: cutoff has to be an integer!")
+    elif cutoff < 1 or cutoff > 100:
+       raise RuntimeError("Vine.Basic: cutoff must fall in (0, 100]!")
+    core                     = get_core()
+    src                      = core.SetFieldBased(src, 0)
+    colorspace               = src.format.color_family
+    if colorspace == vs.RGB:
+       src                   = core.RGB2OPP(src, 1)
+    if colorspace != vs.GRAY:
+       src                   = core.ShufflePlanes(src, 0, vs.GRAY)
+    clip                     = internal.basic(core, src, a, h, sharp, cutoff)
+    del core
+    return clip
+
+def Final(src, super=[None, None], radius=[6, 1, None], pel=4, sad=400.0, sigma=0.6, alpha=0.36, beta=32.0, masking=True, show=False):
+    if not isinstance(src, list):
+       raise TypeError("Vine.Final: src has to be an array!")
+    elif len(src) != 2:
+       raise RuntimeError("Vine.Final: src has to contain 2 elements exactly!")
+    elif not isinstance(src[0], vs.VideoNode) or not isinstance(src[1], vs.VideoNode):
+       raise TypeError("Vine.Final: elements in src must be video clips!")
+    elif src[0].format.sample_type != vs.FLOAT or src[0].format.bits_per_sample < 32:
+       raise TypeError("Vine.Final: the sample type of src[0] has to be single precision!")
+    elif src[1].format.id != vs.GRAYS:
+       raise RuntimeError("Vine.Final: corrupted basic estimation!")
+    if not isinstance(super, list):
+       raise TypeError("Vine.Final: super has to be an array!")
+    elif len(super) != 2:
+       raise RuntimeError("Vine.Final: super has to contain 2 elements exactly!")
+    for i in range(2):
+        if not isinstance(super[i], vs.VideoNode) and super[i] is not None:
+           raise TypeError("Vine.Final: elements in super must be video clips or None!")
+        elif super[i] is not None:
+           if super[i].format.id != vs.GRAYS:
+              raise RuntimeError("Vine.Final: corrupted super clips!")
+    if not isinstance(radius, list):
+       raise TypeError("Vine.Final: radius parameter has to be an array!")
+    elif len(radius) != 3:
+       raise RuntimeError("Vine.Final: radius parameter has to contain 3 elements exactly!")
+    for i in range(2):
+        if not isinstance(radius[i], int):
+           raise TypeError("Vine.Final: radius[" + str(i) + "] has to be an integer!")
+    if radius[0] <= 0:
+       raise RuntimeError("Vine.Final: radius[0] has to be greater than 0!")
+    if radius[1] < 0:
+       raise RuntimeError("Vine.Final: radius[1] has to be no less than 0!")
+    if not isinstance(radius[2], int) and radius[2] is not None:
+       raise TypeError("Vine.Final: radius[2] has to be an integer or None!")
+    elif radius[2] is not None:
+         if radius[2] < 0:
+            raise RuntimeError("Vine.Final: radius[2] has to be no less than 0!")
+    if not isinstance(pel, int):
+       raise TypeError("Vine.Final: pel has to be an integer!")
+    elif pel != 1 and pel != 2 and pel != 4:
+       raise RuntimeError("Vine.Final: pel has to be 1, 2 or 4!")
+    if not isinstance(sad, float) and not isinstance(sad, int):
+       raise TypeError("Vine.Final: sad has to be a real number!")
+    elif sad <= 0:
+       raise RuntimeError("Vine.Final: sad has to be greater than 0!")
+    if not isinstance(alpha, float) and not isinstance(alpha, int):
+       raise TypeError("Vine.Final: alpha has to be a real number!")
+    elif alpha < 0.0 or alpha > 1.0:
+       raise RuntimeError("Vine.Final: alpha must fall in [0.0, 1.0]!")
+    if not isinstance(beta, float) and not isinstance(beta, int):
+       raise TypeError("Vine.Final: beta has to be a real number!")
+    elif beta <= 1.0:
+       raise RuntimeError("Vine.Final: beta has to be greater than 1.0!")
+    if not isinstance(masking, bool):
+       raise TypeError("Vine.Final: masking has to be boolean!")
+    if not isinstance(show, bool):
+       raise TypeError("Vine.Final: show has to be boolean!")
+    if not masking and show:
+       raise RuntimeError("Vine.Final: masking has been disabled, set masking True to show the halo mask!")
+    radius[2]                = math.ceil(radius[1] / 2) if radius[2] is None else radius[2]
+    core                     = get_core()
+    for i in range(2):
+        src[i]               = core.SetFieldBased(src[i], 0)
+        super[i]             = core.SetFieldBased(super[i], 0) if super[i] is not None else None
+    colorspace               = src[0].format.color_family
+    if colorspace == vs.RGB:
+       src[0]                = core.RGB2OPP(src[0], 1)
+    if colorspace != vs.GRAY:
+       src_color             = src[0]
+       src[0]                = core.ShufflePlanes(src[0], 0, vs.GRAY)
+    clip                     = internal.final(core, src, super, radius, pel, sad, sigma, alpha, beta, masking, show)
+    if colorspace != vs.GRAY:
        clip                  = core.ShufflePlanes([clip, src_color], [0, 1, 2], vs.YUV)
     if colorspace == vs.RGB:
-       clip                  = core.ShufflePlanes([core.SelectEvery(clip, 3, 0), core.SelectEvery(clip, 3, 1), core.SelectEvery(clip, 3, 2)], 0, vs.RGB)
+       clip                  = core.OPP2RGB(clip, 1)
     del core
     return clip
 
