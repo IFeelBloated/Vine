@@ -127,7 +127,7 @@ clip = Vine.Gradient(clip)
 ![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
-ref = Vine.Basic(clip, h=24.0)
+ref = Vine.Basic(clip, h=32.0)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], sigma=1.5, alpha=0.06)
 ```
 ![](http://i.imgur.com/sHlq8vG.png)
