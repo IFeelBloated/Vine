@@ -139,7 +139,7 @@ clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], s
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![]()
+![](http://i.imgur.com/FNotFM2.png)
 - analog video kind of severe and gross halo<br />
 ```python
 ref = Vine.Basic(clip, h=64.0, sharp=0.01)
