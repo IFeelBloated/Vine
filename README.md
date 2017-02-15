@@ -127,11 +127,15 @@ clip = Vine.Gradient(clip)
 ![](http://i.imgur.com/Acc4nt4.png)
 - typical halo<br />
 ```python
-ref = Vine.Basic(clip, h=32.0)
+#removing over/undershoot
+ref = Vine.Basic(clip, h=48.0)
+clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 0, 0], sigma=1.5, alpha=0.06)
+#removing halos
+ref = Vine.Basic(clip, h=24.0)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], sigma=1.5, alpha=0.06)
 ```
 ![](http://i.imgur.com/sHlq8vG.png)
-![](http://i.imgur.com/em3L4ew.png)
+![]()
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
