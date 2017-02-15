@@ -147,4 +147,4 @@ ref = Vine.Basic(ref, h=24.0, sharp=0.5)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 2, 4], sigma=2.2, alpha=0.18)
 ```
 ![](http://i.imgur.com/6rYBsz7.png)
-![]()
+![](http://i.imgur.com/1IkyNpG.png)
