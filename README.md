@@ -135,7 +135,7 @@ ref = Vine.Basic(clip, h=24.0)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], sigma=1.5, alpha=0.06)
 ```
 ![](http://i.imgur.com/sHlq8vG.png)
-![]()
+![](http://i.imgur.com/zIK5z4g.png)
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
