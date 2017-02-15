@@ -52,10 +52,11 @@ class get_core:
           clip               = self.Resample(src, w+left+right, h+top+bottom, -left, -top, w+left+right, h+top+bottom, kernel="point", **fmtc_args)
           return clip
 
-      def NLErrors(self, src, a, h):
-          pad                = self.AddBorders(src, a, a, a, a)
-          nlm                = self.KNLMeansCL(pad, d=0, a=a, s=0, h=h)
-          clip               = self.Crop(nlm, a, a, a, a)
+      def NLMeans(self, src, a, s, h, rclip):
+          pad                = self.AddBorders(src, a+s, a+s, a+s, a+s)
+          rclip              = self.AddBorders(rclip, a+s, a+s, a+s, a+s) if rclip is not None else None
+          nlm                = self.KNLMeansCL(pad, d=0, a=a, s=s, h=h, rclip=rclip)
+          clip               = self.Crop(nlm, a+s, a+s, a+s, a+s)
           return clip
 
       def XYClosest(self, src1, src2, ref):
@@ -107,14 +108,20 @@ class internal:
           return clip
 
       def basic(core, src, a, h, sharp, cutoff):
-          constant           = 0.3926327792690057290863679493724
-          weight             = constant * sharp * math.log(1.0 + 1.0 / (constant * sharp))
+          c1                 = 0.3926327792690057290863679493724
+          c2                 = 32.701699437494742410229341718282
+          c3                 = 0.5862453661304626725671053478676
+          weight             = c1 * sharp * math.log(1.0 + 1.0 / (c1 * sharp))
+          h_refine           = c2 * math.pow(h / c2, c3)
           upsampled          = core.Transpose(core.NNEDI(core.Transpose(core.NNEDI(src, **nnedi_args)), **nnedi_args))
-          upsampled          = core.NLErrors(upsampled, a, h)
+          upsampled          = core.NLMeans(upsampled, a, 0, h, None)
           resampled          = core.Resample(upsampled, src.width, src.height, sx=-0.5, sy=-0.5, kernel="cubic", a1=-sharp, a2=0)
-          clean              = core.NLErrors(src, a, h)
+          clean              = core.NLMeans(src, a, 0, h, None)
           clean              = core.Merge(resampled, clean, weight)
-          clip               = core.CutOff(src, clean, cutoff)
+          clean              = core.CutOff(src, clean, cutoff)
+          dif                = core.MakeDiff(src, clean)
+          dif                = core.NLMeans(dif, a, 1, h_refine, clean)
+          clip               = core.MergeDiff(clean, dif)
           return clip
 
       def final(core, src, super, radius, pel, sad, sigma, alpha, beta, masking, show):
