@@ -20,6 +20,7 @@ Vine is a collection of a block/pixel matching based de-halo filter and a set of
 - Super
 - Basic
 - Final
+
 ### Morphological Filters
 - Dilation
 - Erosion
@@ -61,6 +62,7 @@ workflow:
 - apply a degraded (local mean/similarity window = 0) NLMeans filter to kill halos, it's not NLMeans technically, it weights on the error between 2 pixels instead of SSE between 2 blocks, which works ultra nice on halos
 - like the classic aliasing (nearest neighbor) and ringing (sinc) trade-off, non-local errors filtering annihilates halos and brings aliasing, so do it again with supersampling and clean the aliasing mess, the supersampled result will be blended with the result before supersampling, weight is determined by the "sharp" parameter
 - a cutoff filter replaces low frequencies of the filtered clip with low frequencies from the source clip since halos are medium to high frequency artifacts apparently
+- non-local errors might distort high frequency components since it does not make use of the neighborhood at all, especially with a large "h", so do an actual NLMeans here to refine high frequencies and therefore remove artifacts caused by non-local errors
 
 ```python
 Basic(src, a=32, h=6.4, sharp=1.0, cutoff=4)
@@ -129,11 +131,11 @@ ref = Vine.Basic(clip, h=24.0)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], sigma=1.5, alpha=0.06)
 ```
 ![](http://i.imgur.com/sHlq8vG.png)
-![](http://i.imgur.com/07tZyg4.png)
+![]()
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![](http://i.imgur.com/vLKJ8bZ.png)
+![]()
 - analog video kind of severe and gross halo<br />
 ```python
 ref = Vine.Basic(clip, h=64.0, sharp=0.01)
@@ -141,4 +143,4 @@ ref = Vine.Basic(ref, h=24.0, sharp=0.01)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 2, 4], sigma=2.2, alpha=0.18)
 ```
 ![](http://i.imgur.com/6rYBsz7.png)
-![](http://i.imgur.com/Ark0oO1.png)
+![]()
