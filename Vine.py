@@ -109,7 +109,7 @@ class internal:
 
       def basic(core, src, a, h, sharp, cutoff):
           c1                 = 0.3926327792690057290863679493724
-          c2                 = 32.701699437494742410229341718282
+          c2                 = 18.880334973195822973214959957208
           c3                 = 0.5862453661304626725671053478676
           weight             = c1 * sharp * math.log(1.0 + 1.0 / (c1 * sharp))
           h_refine           = c2 * math.pow(h / c2, c3)
