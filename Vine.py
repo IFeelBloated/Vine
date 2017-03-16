@@ -12,30 +12,29 @@ nnedi_args                   = dict(field=1, dh=True, nns=4, qual=2, etype=1, ns
 
 class get_core:
       def __init__(self):
-          self.core          = vs.get_core()
-          self.MSuper        = self.core.mvsf.Super
+          self.MSuper        = vs.core.mvsf.Super
           self.MAnalyze      = mvmulti.Analyze
           self.MRecalculate  = mvmulti.Recalculate
           self.MDegrainN     = mvmulti.DegrainN
-          self.KNLMeansCL    = self.core.knlm.KNLMeansCL
-          self.Canny         = self.core.tcanny.TCanny
-          self.NNEDI         = self.core.nnedi3.nnedi3
-          self.RGB2OPP       = self.core.bm3d.RGB2OPP
-          self.OPP2RGB       = self.core.bm3d.OPP2RGB
-          self.Resample      = self.core.fmtc.resample
-          self.Maximum       = self.core.std.Maximum
-          self.Minimum       = self.core.std.Minimum
-          self.Expr          = self.core.std.Expr
-          self.Merge         = self.core.std.Merge
-          self.MakeDiff      = self.core.std.MakeDiff
-          self.MergeDiff     = self.core.std.MergeDiff
-          self.Crop          = self.core.std.CropRel
-          self.AddBorders    = self.core.std.AddBorders
-          self.Transpose     = self.core.std.Transpose
-          self.Inflate       = self.core.std.Inflate
-          self.MaskedMerge   = self.core.std.MaskedMerge
-          self.ShufflePlanes = self.core.std.ShufflePlanes
-          self.SetFieldBased = self.core.std.SetFieldBased
+          self.KNLMeansCL    = vs.core.knlm.KNLMeansCL
+          self.Canny         = vs.core.tcanny.TCanny
+          self.NNEDI         = vs.core.nnedi3.nnedi3
+          self.RGB2OPP       = vs.core.bm3d.RGB2OPP
+          self.OPP2RGB       = vs.core.bm3d.OPP2RGB
+          self.Resample      = vs.core.fmtc.resample
+          self.Maximum       = vs.core.std.Maximum
+          self.Minimum       = vs.core.std.Minimum
+          self.Expr          = vs.core.std.Expr
+          self.Merge         = vs.core.std.Merge
+          self.MakeDiff      = vs.core.std.MakeDiff
+          self.MergeDiff     = vs.core.std.MergeDiff
+          self.Crop          = vs.core.std.CropRel
+          self.AddBorders    = vs.core.std.AddBorders
+          self.Transpose     = vs.core.std.Transpose
+          self.Inflate       = vs.core.std.Inflate
+          self.MaskedMerge   = vs.core.std.MaskedMerge
+          self.ShufflePlanes = vs.core.std.ShufflePlanes
+          self.SetFieldBased = vs.core.std.SetFieldBased
 
       def CutOff(self, low, hi, p):
           def inline(src):
