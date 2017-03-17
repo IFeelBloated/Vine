@@ -142,8 +142,8 @@ clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], s
 ![](http://i.imgur.com/eH1oSEK.png)
 - analog video kind of severe and gross halo<br />
 ```python
-ref = Vine.Basic(clip, h=64.0, sharp=0.5)
-ref = Vine.Basic(ref, h=24.0, sharp=0.5)
+ref = Vine.Basic(clip, h=36.95, sharp=0.5)
+ref = Vine.Basic(ref, h=13.86, sharp=0.5)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 2, 4], sigma=2.2, alpha=0.18)
 ```
 ![](http://i.imgur.com/6rYBsz7.png)
