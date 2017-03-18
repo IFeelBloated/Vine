@@ -131,15 +131,15 @@ clip = Vine.Gradient(clip)
 ref = Vine.Basic(clip, h=27.72)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 0, 0], sigma=1.5, alpha=0.06)
 #removing halos
-ref = Vine.Basic(clip, h=13.86)
+ref = Vine.Basic(clip, h=10.39)
 clip = Vine.Final([clip, ref], [Vine.Super(clip), Vine.Super(ref)], [6, 1, 4], sigma=1.5, alpha=0.06)
 ```
 ![](http://i.imgur.com/sHlq8vG.png)
-![](http://i.imgur.com/BnGJcqE.png)
+![]()
 <br />
 *zoomed to 400%*<br />
 *click the image and view at full size*<br />
-![](http://i.imgur.com/eH1oSEK.png)
+![]()
 - analog video kind of severe and gross halo<br />
 ```python
 ref = Vine.Basic(clip, h=36.95, sharp=0.5)
